@@ -5,12 +5,19 @@ const PORT = process.env.PORT || 5000
 
 const app = express()
 
-app
-  .get('/events', (_, res) => {
-    const URL = 'https://api.meetup.com/find/upcoming_events?key=TOKEN'
+app.use(function(_, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
 
-    request(URL, { json: true }, (err, _, body) => {
-      err ? res.json({ error: err }) : res.json(body)
+  next();
+});
+
+app
+  .get('/events', (req, res) => {
+    const URL = 'https://api.meetup.com/find/upcoming_events'
+
+    request.get({ url: URL, qs: req.query, json: true }, (err, _, body) => {
+      err ? res.json(err) : res.json(body)
     })
   })
 
